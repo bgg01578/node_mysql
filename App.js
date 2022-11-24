@@ -49,11 +49,11 @@ app.use(bodyParser.urlencoded({
 
 //데이터베이스 접속 정보
 let options = {
-    host:'127.0.0.1',
-    port:3306,
-    user:'root',
-    password:'wnddkd',
-    database:'adam'
+    host:process.env.HOST,
+    port:process.env.MYSQLPORT,
+    user:process.env.USERNAME,
+    password:process.env.PASSWORD,
+    database:process.env.DATABASE
 };
 //세션을 저장하기 위한 MySQL 데이터베이스 저장소 생성
 const MariaDBStore = require('express-mysql-session')(session);
