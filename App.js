@@ -96,6 +96,11 @@ connection.connect((error) => {
     }
 })
 
+//기본 요청을 처리
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 
 //에러 발생시 처리
 app.use((err, req, res, next)=>{
