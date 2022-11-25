@@ -213,10 +213,29 @@
                                 + "<td colspan='2' align='center' width='240'>"
                                 + "<a href='#' id='deletebtn'>데이터 삭제</a>"
                                 + "</td></tr>";
+                            //수정을 위한 DOM을 추가
+                            display += "<tr>" 
+                                + "<td colspan='2' align='center' width='240'>"
+                                + "<a href='#' id='updatebtn'>데이터 수정</a>"
+                                + "</td></tr>";
                             
                             display += "</table></td></tr></table>";
                             
                             content.innerHTML = display;
+                            
+                            //데이터 수정을 눌렀을 때 처리
+                            let updatebtn = document.getElementById("updatebtn");
+                            if(updatebtn != undefined){
+                                updatebtn.addEventListener('click', (e) => {
+                                    let request = new XMLHttpRequest();
+                                    request.open('GET', '/item/update');
+                                    request.send('');
+                                    request.addEventListener('load', () => {
+                                        let html = request.responseText;
+                                        content.innerHTML = html;
+                                    })
+                                })
+                            }
 
                             //데이터 삭제를 눌렀을 때 처리
                             let deletebtn = document.getElementById("deletebtn");
@@ -224,7 +243,6 @@
                                 deletebtn.addEventListener('click', (e) => {
                                     //폼이 없는 경우의 POST 방식 파라미터 만들기
                                     let params = 'itemid=' + item.itemid;
-                                    alert(params);
 
                                     let request = new XMLHttpRequest();
                                     request.open('POST', '/item/delete');

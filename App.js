@@ -323,6 +323,14 @@ app.post('/item/delete', (req, res) => {
 
 });
 
+//수정을 get으로 요청했을 때 - 수정 화면으로 이동
+app.get('/item/update', (req, res) => {
+    //public 디렉토리의 update.html을 읽어내서 리턴
+    fs.readFile('./public/update.html', (err, data)=>{
+        res.end(data);
+    });
+});
+
 
 //에러 발생시 처리
 app.use((err, req, res, next)=>{
