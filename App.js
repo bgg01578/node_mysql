@@ -187,6 +187,22 @@ app.get('/item/list', (req, res) => {
     });
 });
 
+//상세보기 처리를 위한 코드
+app.get('/item/detail/:itemid', (req, res) => {
+    //파라미터 읽기
+    let itemid = req.params.itemid;
+    //itemid를 이용해서 1개의 데이터를 찾아오는 SQL을 실행
+    connection.query("select * from goods where itemid=?",
+     [itemid], (err, results, fields) => {
+        if(err){
+            console.log(err);
+            res.json({"result":false});
+        }else{
+            console.log(results);
+            res.json({"result":true, "item":results[0]});
+        }
+    });
+});
 
 //에러 발생시 처리
 app.use((err, req, res, next)=>{
