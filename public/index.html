@@ -218,6 +218,55 @@
                 }
             });
 
+            let insertbtn = document.getElementById("insertbtn");
+            insertbtn.addEventListener('click', (e) => {
+                //삽입화면 출력
+                content.innerHTML = '';
+                let html = 
+                    `
+                        <div>
+                            <p></p>
+                            <form id='insertform'
+                            enctype='multipart/form-data'
+                            method='post'>
+                            아이템이름<input type='text'
+                            name='itemname' id='itemname'/><br/>
+                            가격<input type='text'
+                            name='price' id='price'/><br/>
+                            설명<input type='text'
+                            name='description' id='description'/><br/>
+                            이미지<input type='file'
+                            name='pictureurl' id='pictureurl'/><br/>
+                            <input type='submit' value='삽입'/>
+                            </form></div>
+                    `
+                    content.innerHTML = html;
+
+                    //폼안에서 삽입 버튼을 눌렀을 때 처리
+                    let f = document.getElementById('insertform');
+                    if(f != undefined){
+                        f.addEventListener('submit', (e) => {
+                            //기본 이벤트 제거
+                            e.preventDefault();
+                            //폼 데이터 찾아오기
+                            const formData = new FormData(
+                                document.getElementById("insertform"));
+                            //폼 데이터를 전송
+                            let request = new XMLHttpRequest();
+                            request.open("POST", "/item/insert", true);
+                            request.send(formData);
+                            request.addEventListener('load', () => {
+                                let data = JSON.parse(request.responseText);
+                                if(data.result){
+                                    //데이터 다시 불러오기
+                                    document.getElementById("listbtn").click();
+                                }else{
+                                    alert("삽입 실패");
+                                }
+                            })
+                        })
+                    }
+            });
         });
     </script>
 </head>
@@ -225,6 +274,7 @@
     <h1>Maria DB</h1>
     <a href="#" id="allbtn">전체 데이터 가져오기</a><br/>
     <a href="#" id="listbtn">페이지 단위 데이터 가져오기</a><br/>
+    <a href="#" id="insertbtn">데이터 삽입</a><br/>
     <!-- 데이터 출력 영역 -->
     <div id="content"></div> 
     <script>

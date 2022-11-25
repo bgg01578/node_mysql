@@ -220,7 +220,85 @@ app.get('/img/:pictureurl', (req, res) => {
     //파일의 내용을 읽어서 res에 전송
     let filestream = fs.createReadStream(file);
     filestream.pipe(res);
+});
+
+//현재 날짜를 문자열로 리턴하는 함수
+//요즈음 등장하는 자바스크립트 라이브러리들의 샘플 예제는 
+//특별한 경우가 아니면 function 을 사용하지 않습니다.
+const getDate = () => {
+    let date = new Date();
+    let year = date.getFullYear();
+    //월은 +1을 해야 우리가 사용하는 월이 됩니다.
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    month = month >= 10 ? month : '0' + month;
+    day = day >= 10 ? day : '0' + day;
+    return year + "-" + month + "-" + day;
+}
+
+//날짜 와 시간을 리턴하는 함수
+const getTime = () => {
+    let date = new Date();
+    let hour = date.getHours();
+    let minute = date.getMinutes();
+    let second = date.getSeconds();
+
+    hour >= 10 ? hour : '0' + hour;
+    minute >= 10 ? minute : '0' + minute;
+    second >= 10 ? second : '0' + second;
+
+    return getDate() + " " 
+        + hour + ":" + minute + ":" + second;
+}
+
+//데이터 삽입을 처리해주는 함수
+app.post('/item/insert', upload.single('pictureurl'), 
+    (req, res) => {
+    //파라미터 읽어오기
+    const itemname = req.body.itemname;
+    const description = req.body.description;
+    const price = req.body.price;
+
+    //파일 이름 - 업로드하는 파일이 없으면 default.png
+    let pictureurl;
+    if(req.file){
+        pictureurl = req.file.filename
+    }else{
+        pictureurl = 'default.jpg';
+    }
+
+    //가장 큰 itemid 찾기
+    connection.query("select max(itemid) maxid from goods",
+    [], (err, results, fields) => {
+        let itemid;
+        //최대값이 있으면 + 1 하고 없으면 1로 설정
+        if(results.length > 0 ){
+            itemid = results[0].maxid + 1;
+        }else{
+            itemid = 1;
+        }
+
+        //데이터 삽입
+        connection.query("insert into goods(" + 
+            "itemid, itemname, price, description," 
+            + "pictureurl, updatedate) values(?, ?, ?, ?, ?, ?)",
+            [itemid, itemname, price, description, pictureurl,
+            getDate()], (err, results, fields) => {
+            if(err){
+                console.log(err);
+                res.json({"result":false});
+            }else{
+                //현재 날짜 및 시간을 update.txt에 기록
+                const writeStream = fs.createWriteStream('./update.txt');
+                writeStream.write(getTime());
+                writeStream.end();
+
+                res.json({"result":true});
+            }
+        })
+    });
 })
+
 
 //에러 발생시 처리
 app.use((err, req, res, next)=>{
