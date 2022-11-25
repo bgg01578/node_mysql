@@ -204,6 +204,24 @@ app.get('/item/detail/:itemid', (req, res) => {
     });
 });
 
+//이미지 다운로드 처리
+app.get('/img/:pictureurl', (req, res) => {
+    let pictureurl = req.params.pictureurl;
+    //이미지 파일의 절대경로를 생성
+    let file = 
+    "C:\Users\Administrator\Documents\node\mariadb\public\img" 
+        + "/" + pictureurl; 
+    console.log(__dirname);
+    //파일 이름을 가지고 타입을 생성
+    let mimetype = mime.lookup(pictureurl);
+    res.setHeader('Content-disposition', 
+        'attachment; filename=' + pictureurl);
+    res.setHeader('Content-type', mimetype);
+    //파일의 내용을 읽어서 res에 전송
+    let filestream = fs.createReadStream(file);
+    filestream.pipe(res);
+})
+
 //에러 발생시 처리
 app.use((err, req, res, next)=>{
     console.log(err);
