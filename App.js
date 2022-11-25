@@ -297,7 +297,31 @@ app.post('/item/insert', upload.single('pictureurl'),
             }
         })
     });
-})
+});
+
+//데이터를 삭제하는 함수
+app.post('/item/delete', (req, res) => {
+    //post 방식으로 전송된 데이터 읽기
+    let itemid = req.body.itemid;
+
+    //itemid를 받아서 goods 테이블에서 삭제하기
+    connection.query("delete from goods where itemid=?",
+     [itemid], (err, results, fields)=>{
+        if(err){
+            console.log(err);
+            res.json({"result":false});
+        }else{
+            //현재 날짜 및 시간을 update.txt에 기록
+            const writeStream = fs.createWriteStream(
+                './update.txt');
+            writeStream.write(getTime());
+            writeStream.end();
+
+            res.json({"result":true});
+        }
+    });
+
+});
 
 
 //에러 발생시 처리

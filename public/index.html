@@ -208,11 +208,41 @@
                             display += "<tr height='50'><td width='80'>비고</td>";
                             display += "<td width='160'>" + item.description + 
                                 "</td></tr>";
+                            //삭제를 위한 DOM을 추가
+                            display += "<tr>" 
+                                + "<td colspan='2' align='center' width='240'>"
+                                + "<a href='#' id='deletebtn'>데이터 삭제</a>"
+                                + "</td></tr>";
                             
                             display += "</table></td></tr></table>";
-
                             
                             content.innerHTML = display;
+
+                            //데이터 삭제를 눌렀을 때 처리
+                            let deletebtn = document.getElementById("deletebtn");
+                            if(deletebtn != undefined){
+                                deletebtn.addEventListener('click', (e) => {
+                                    //폼이 없는 경우의 POST 방식 파라미터 만들기
+                                    let params = 'itemid=' + item.itemid;
+                                    alert(params);
+
+                                    let request = new XMLHttpRequest();
+                                    request.open('POST', '/item/delete');
+                                    //폼이 아닌 경우는 form 형식으로 인코딩
+                                    request.setRequestHeader('Content-type',
+                                    'application/x-www-form-urlencoded');
+                                    request.send(params);
+                                    request.addEventListener('load', () => {
+                                        let data = JSON.parse(request.responseText);
+                                        if(data.result){
+                                            document.getElementById("listbtn").click();
+                                            alert("삭제 성공");
+                                        }else{
+                                            alert("삭제 실패");
+                                        }
+                                    })
+                                })
+                            }
                         }
                     });
                 }
