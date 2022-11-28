@@ -94,7 +94,22 @@ connection.connect((error) => {
         console.log(error);
         throw error;
     }
-})
+});
+
+//sequelize를 이용한 데이터베이스 연결
+//require를 할 때 디렉토리 이름을 기재하면
+//디렉토리 안의 index.js 의 내용을 import
+const {sequelize} = require('./models');
+const {Good} = require('./models');
+
+sequelize.sync({force:false})
+    .then(() => {
+        console.log("데이터베이스 연결 성공");
+    })
+    .catch((err) => {
+        console.log("데이터베이스 연결 실패");
+    });
+
 
 //기본 요청을 처리
 app.get('/', (req, res) => {
