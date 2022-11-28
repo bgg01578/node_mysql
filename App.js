@@ -331,6 +331,53 @@ app.get('/item/update', (req, res) => {
     });
 });
 
+app.post('/item/update', upload.single('pictureurl'), (req, res) => {
+   //파라미터 가져오기
+   const itemid = req.body.itemid;
+   const itemname = req.body.itemname;
+   const price = req.body.price;
+   const description = req.body.description;
+   //예전 파일 이름
+   const oldpictureurl = req.body.oldpictureurl;
+
+   //수정할 파일 이름 만들기
+   let pictureurl;
+   //새로 선택한 파일이 있다면
+   if(req.file){
+        pictureurl = req.file.filename;
+   }else{
+        pictureurl = oldpictureurl;
+   }
+   //데이터베이스 작업
+   connection.query("update goods set itemname=?, price=?," +  
+    "description=?, pictureurl=?, updatedate=? where itemid=?",
+     [itemname, price, description, pictureurl, getDate(),
+    itemid], 
+        (error, results, fields) => {
+        //console.log(results);
+        //console.log(fields);
+        if(error){
+            //에러가 발생한 경우
+            console.log(error);
+            res.json({"result": false});
+        }else{
+            //성공했을 때 처리
+            const writeStream = 
+                fs.createWriteStream("./update.txt");
+            writeStream.write(getTime());
+            writeStream.end();
+            res.json({"result": true});
+        }
+   })
+
+});
+
+app.get('/item/updatedate', (req, res) => {
+    fs.readFile('./update.txt', (error, data)=>{
+        res.json({'result': data.toString()});
+    })
+});
+
 
 //에러 발생시 처리
 app.use((err, req, res, next)=>{
